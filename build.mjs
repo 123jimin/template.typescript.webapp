@@ -1,8 +1,13 @@
 // @ts-check
 
-const { Builder } = require("./scripts/builder");
+import process from 'node:process';
+import {dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
 
-const args = require('args-parser')(process.argv);
+import argsParser from "args-parser";
+import {Builder} from "./scripts/builder.mjs";
+
+const args = argsParser(process.argv);
 
 switch(args.sourcemap) {
     case 'false': args.sourcemap = false; break;
@@ -20,5 +25,5 @@ async function main() {
     }
 }
 
-process.chdir(__dirname);
+process.chdir(dirname(fileURLToPath(import.meta.url)));
 main();

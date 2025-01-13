@@ -1,14 +1,15 @@
 // @ts-check
 /** @import { BuildParams } from "./builder" */
+/** @import { BuildOptions } from "esbuild"; */
 
-const esbuild = require('esbuild');
+import esbuild from "esbuild";
 
-class Builder {
+export class Builder {
     /** @type {BuildParams} */
     args;
 
     /**
-     * @param {Partial<BuildParams>} args 
+     * @param {Partial<BuildParams>} args
      */
     constructor(args) {
         this.args = {
@@ -32,12 +33,12 @@ class Builder {
         }
     }
 
-    /** 
-     * @param {Awaited<ReturnType<typeof esbuild.context>>} ctx 
+    /**
+     * @param {Awaited<ReturnType<typeof esbuild.context>>} ctx
      */
     async serveLiveReloadServer(ctx) {
         await ctx.watch();
-        
+
         const {host, port} = await ctx.serve({
             servedir: "./serve/",
         });
@@ -48,25 +49,25 @@ class Builder {
     }
 
     /* esbuild configs */
-    
+
+    /** @returns {Promise<BuildOptions>} */
     async creteBuildConfig() {
         return {
             entryPoints: ["./src/index.ts"],
-            bundle: this.opt_bundle,
-            outfile: this.opt_outfile,
+            bundle: true,
+            outdir: "./serve/build/",
             target: ["chrome131", "firefox133"],
+
+            alias: {
+                "react": "preact/compat",
+                "react-dom/test-utils": "preact/test-utils",
+                "react-dom": "preact/compat",
+                "react/jsx-runtime": "preact/jsx-runtime",
+            },
 
             minify: this.opt_minify,
             sourcemap: this.opt_sourcemap,
         };
-    }
-
-    get opt_bundle() {
-        return true;
-    }
-
-    get opt_outfile() {
-        return "./serve/build/index.js";
     }
 
     get opt_minify() {
@@ -74,12 +75,12 @@ class Builder {
             case 'dev': return false;
             case 'prod': return true;
         }
+
+        throw new Error(`Invalid mode: ${this.args.mode}`);
     }
-    
+
     /** @type {BuildParams['sourcemap']} */
     get opt_sourcemap() {
         return this.args.sourcemap;
     }
 }
-
-module.exports = { Builder };

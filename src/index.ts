@@ -1,5 +1,10 @@
 import "./index.css";
 
-import { main } from "./main";
+import {createElement, render} from "preact";
 
-main();
+import {Root} from "@/component/app";
+
+(async function main() {
+    const vdom = createElement(Root, {});
+    render(vdom, document.body);
+})();

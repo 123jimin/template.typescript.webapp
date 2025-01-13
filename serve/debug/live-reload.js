@@ -20,7 +20,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     /**
-     * @param {string[]} changed 
+     * @param {string} css_path
+     */
+    async function loadCSS(css_path) {
+        for(const child_raw of document.querySelectorAll("head>link,head>style")) {
+            const child = /** @type {HTMLStyleElement|HTMLLinkElement} */ (child_raw);
+            if(child.dataset["remove_on_reload"] === "true") {
+                document.head.removeChild(child);
+            }
+        }
+
+        await new Promise((resolve, reject) => {
+            const link = document.createElement("link");
+            link.dataset["remove_on_reload"] = "true";
+
+            link.addEventListener('load', resolve);
+            link.addEventListener('error', reject);
+            document.head.appendChild(link);
+
+            link.rel = 'stylesheet';
+            link.href = `${css_path}?t=${Date.now()}`;
+        });
+    }
+
+    /**
+     * @param {string[]} changed
      * @returns {boolean}
      */
     function tryReloadCSS(changed) {
@@ -33,24 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         return false;
-    }
-
-    async function loadCSS(css_path) {
-        for(const child of document.querySelectorAll("head>link,head>style")) {
-            if(child.parentNode === document.head) {
-                document.head.removeChild(child);
-            }
-        }
-
-        await new Promise((resolve, reject) => {
-            const link = document.createElement("link");
-            link.addEventListener('load', resolve);
-            link.addEventListener('error', reject);
-            document.head.appendChild(link);
-            
-            link.rel = 'stylesheet';
-            link.href = `${css_path}?t=${Date.now()}`;
-        });
     }
 
     console.log("%cLoading CSS...", "color: #33F");
@@ -67,6 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if(tryReload(changed)) return;
             if(tryReloadCSS(changed)) return;
-        } catch(err) {}
+        } catch(err) {
+            console.error(err);
+        }
     });
 });

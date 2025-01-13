@@ -20,6 +20,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Get Current Git Commit Hash
+      run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
@@ -35,6 +37,7 @@ jobs:
       run: |
         cp -r ./serve/ ./_site
         rm -rf ./_site/debug
+        sed -i "s/__COMMIT_HASH__/${{ env.COMMIT_HASH }}/g" ./_site/index.html
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:

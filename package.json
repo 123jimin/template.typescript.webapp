@@ -4,8 +4,8 @@
   "description": "placeholder-description",
   "main": "index.js",
   "scripts": {
-    "build": "node ./build.js",
-    "debug": "node ./build.js --mode=dev --serve",
+    "build": "node ./build.mjs",
+    "debug": "node ./build.mjs --mode=dev --serve",
 
     "tsc": "tsc",
     "tsc-watch": "tsc --watch"
