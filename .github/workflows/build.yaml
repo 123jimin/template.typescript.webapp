@@ -1,0 +1,43 @@
+name: Build Web App
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Get Current Git Commit Hash
+      run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        run_install: true
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ">=22.0"
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install
+    - name: Run Build
+      run: pnpm build --mode=prod --sourcemap=false
+    - name: Postprocess Files
+      run: |
+        rm -rf ./serve/debug
+        sed -i "s/__COMMIT_HASH__/${{ env.COMMIT_HASH }}/g" ./serve/index.html
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: serve/
