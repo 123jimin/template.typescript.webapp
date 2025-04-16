@@ -1,3 +1,4 @@
+import "./reset.css";
 import "./index.css";
 
 import {createElement, render} from "preact";
