@@ -32,6 +32,8 @@ jobs:
         cache: 'pnpm'
     - name: Install dependencies
       run: pnpm install
+    - name: Run Type Check
+      run: pnpm tsc
     - name: Run Build
       run: pnpm build --mode=prod --sourcemap=false
     - name: Postprocess Files
