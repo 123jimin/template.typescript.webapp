@@ -25,13 +25,6 @@ jobs:
       uses: pnpm/action-setup@v4
       with:
         run_install: true
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ">=22.0"
-        cache: 'pnpm'
-    - name: Install dependencies
-      run: pnpm install
     - name: Run Type Check
       run: pnpm tsc
     - name: Run Build
