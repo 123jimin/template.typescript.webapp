@@ -87,8 +87,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
     esbuild.addEventListener('error', (event) => {
-        console.error("esbuild error:", event);
         esbuild.close();
+        if(reload_attempted) return;
+
+        console.error("esbuild error:", event);
+        console.error(JSON.stringify(event));
         document.body.classList.add("live-reload-error");
     });
 });
