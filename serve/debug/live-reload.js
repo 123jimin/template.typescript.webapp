@@ -91,7 +91,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(reload_attempted) return;
 
         console.error("esbuild error:", event);
-        console.error(JSON.stringify(event));
         document.body.classList.add("live-reload-error");
     });
 });
